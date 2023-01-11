@@ -23,7 +23,7 @@ function InvalidMatrix(): ParseMatrixResult {
 function ValidMatrix(matrix: Matrix): ParseMatrixResult {
   return {
     unwrap() {
-      return { isValid: true, json: JSON.stringify(matrix.flat(1)) };
+      return { isValid: true, json: `[${matrix.flat(1).map(x => JSON.stringify(x)).join(', ')}]` };
     },
     map(mapper) {
       return ValidMatrix(mapper(matrix));
@@ -141,7 +141,7 @@ export function transformCSVStream(
     const json = line.slice(indexOfComma + 1).replaceAll(/^"|"$/g, "");
     const result = parseMatrix(json).map(rotate).unwrap();
     outStream.write(
-      [id, `"${result.json.replaceAll(",", ", ")}"`, result.isValid].join(",")
+      [id, `"${result.json}"`, result.isValid].join(",")
     );
   }
 

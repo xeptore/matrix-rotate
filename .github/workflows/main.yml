@@ -8,44 +8,68 @@ on:
       - main
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 19.x]
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        node_version:
+          - 16
+          - 18
+          - 19
+        architecture:
+          - x64
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node_version }} - ${{ matrix.architecture }} on ${{ matrix.os }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+          architecture: ${{ matrix.architecture }}
           cache: 'pnpm'
-      - name: Install npm
-        run: npm install --global npm@9
-      - name: Install pnpm
-        run: npm install --global pnpm@7
       - name: Install Dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
       - name: Build
         run: pnpm run build
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 19.x]
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        node_version:
+          - 16
+          - 18
+          - 19
+        architecture:
+          - x64
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node_version }} - ${{ matrix.architecture }} on ${{ matrix.os }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+          architecture: ${{ matrix.architecture }}
           cache: 'pnpm'
-      - name: Install npm
-        run: npm install --global npm@9
-      - name: Install pnpm
-        run: npm install --global pnpm@7
       - name: Install Dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
       - name: Test
         run: pnpm run test
